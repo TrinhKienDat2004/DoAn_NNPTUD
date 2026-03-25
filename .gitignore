@@ -1,0 +1,29 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Env secrets
+.env
+.env.*
+
+# Uploads (giữ file tạm/ảnh/tài liệu không commit)
+uploads/
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# Cursor
+.cursor/
+
+# Build outputs (nếu có FE)
+dist/
+build/
+coverage/
+
