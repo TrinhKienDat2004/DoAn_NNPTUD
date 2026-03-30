@@ -3,12 +3,48 @@ const mongoose = require('mongoose');
 
 const User = require('../../models/user.model');
 const Role = require('../../models/role.model');
+const StudentProfile = require('../../models/studentProfile.model');
+const TeacherProfile = require('../../models/teacherProfile.model');
 
 function omitPassword(doc) {
   if (!doc) return doc;
   const obj = doc.toObject ? doc.toObject() : doc;
   delete obj.password;
   return obj;
+}
+
+async function getMyProfile(req, res) {
+  const { id, roleName } = req.user;
+  let profile = null;
+
+  if (roleName === 'SINHVIEN') {
+    profile = await StudentProfile.findOne({ userId: id, isDeleted: false });
+  } else if (roleName === 'GIANGVIEN') {
+    profile = await TeacherProfile.findOne({ userId: id, isDeleted: false });
+  }
+
+  const userDoc = await User.findById(id).select('-password');
+  return res.status(200).json({ status: 'success', data: { user: userDoc, profile } });
+}
+
+async function updateMyProfile(req, res) {
+  const { id, roleName } = req.user;
+  const payload = req.body || {};
+  let profile = null;
+
+  if (roleName === 'SINHVIEN') {
+    profile = await StudentProfile.findOneAndUpdate({ userId: id, isDeleted: false }, payload, { new: true });
+  } else if (roleName === 'GIANGVIEN') {
+    profile = await TeacherProfile.findOneAndUpdate({ userId: id, isDeleted: false }, payload, { new: true });
+  }
+
+  // Allow updating user username as well
+  if (payload.username) {
+    await User.findByIdAndUpdate(id, { username: payload.username });
+  }
+
+  const userDoc = await User.findById(id).select('-password');
+  return res.status(200).json({ status: 'success', message: 'Cập nhật thành công', data: { user: userDoc, profile } });
 }
 
 async function list(req, res) {
@@ -95,5 +131,5 @@ async function uploadAvatar(req, res) {
   return res.status(200).json({ status: 'success', data: doc });
 }
 
-module.exports = { list, getById, create, updateById, deleteById, uploadAvatar };
+module.exports = { list, getById, create, updateById, deleteById, uploadAvatar, getMyProfile, updateMyProfile };
 

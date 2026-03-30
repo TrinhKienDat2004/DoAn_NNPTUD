@@ -14,14 +14,7 @@ const Dashboard = () => (
   </div>
 );
 
-const Profile = () => (
-  <div>
-    <h1 style={{ marginBottom: '1rem', fontSize: '2rem' }}>Trang Cá Nhân</h1>
-    <div className="glass-panel" style={{ padding: '2rem' }}>
-      <p>Cập nhật thông tin Sinh viên / Giảng viên tại đây.</p>
-    </div>
-  </div>
-);
+import Profile from './pages/Profile';
 
 const Courses = () => (
   <div>

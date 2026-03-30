@@ -9,6 +9,10 @@ const usersController = require('../../controllers/v1/users.controller');
 
 router.use(authMiddleware);
 
+// Get/Update my profile
+router.get('/me/profile', usersController.getMyProfile);
+router.put('/me/profile', usersController.updateMyProfile);
+
 // Avatar upload (user self or ADMIN)
 router.post(
   '/:id/avatar',
@@ -27,4 +31,3 @@ router.put('/:id', authorize({ permissions: ['users:manage'] }), usersController
 router.delete('/:id', authorize({ permissions: ['users:manage'] }), usersController.deleteById);
 
 module.exports = router;
-

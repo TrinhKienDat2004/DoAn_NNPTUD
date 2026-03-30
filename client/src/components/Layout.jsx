@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Outlet, Navigate, Link, useNavigate, useLocation } from 'react-router-dom';
 import { Home, BookOpen, User, LogOut, FileText } from 'lucide-react';
 import './Layout.css';
@@ -12,7 +13,18 @@ export default function Layout() {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  const user = userStr ? JSON.parse(userStr) : null;
+  const [user, setUser] = useState(() => userStr ? JSON.parse(userStr) : null);
+
+  useEffect(() => {
+    const handleStorage = () => {
+      const updatedUserStr = localStorage.getItem('user');
+      if (updatedUserStr) {
+        setUser(JSON.parse(updatedUserStr));
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
