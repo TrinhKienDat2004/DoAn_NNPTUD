@@ -79,5 +79,26 @@ async function login(req, res) {
   });
 }
 
-module.exports = { register, login };
+async function changePassword(req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ status: 'fail', message: 'Validation error', errors: errors.array() });
+  }
 
+  const { oldPassword, newPassword } = req.body;
+  const user = await User.findById(req.user.id);
+  
+  if (!user || user.isDeleted) {
+    return res.status(401).json({ status: 'fail', message: 'User not found' });
+  }
+
+  const ok = await bcrypt.compare(oldPassword, user.password);
+  if (!ok) return res.status(401).json({ status: 'fail', message: 'Mật khẩu cũ không chính xác' });
+
+  user.password = await bcrypt.hash(newPassword, 10);
+  await user.save();
+
+  return res.status(200).json({ status: 'success', message: 'Đổi mật khẩu thành công' });
+}
+
+module.exports = { register, login, changePassword };

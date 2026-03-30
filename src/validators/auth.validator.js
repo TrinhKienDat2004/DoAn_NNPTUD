@@ -12,5 +12,10 @@ const loginValidator = [
   body('password').isString().notEmpty().withMessage('password required')
 ];
 
-module.exports = { registerValidator, loginValidator };
+const changePasswordValidator = [
+  body('oldPassword').isString().notEmpty().withMessage('oldPassword required'),
+  body('newPassword').isString().isLength({ min: 6, max: 100 }).withMessage('newPassword invalid, min 6 chars')
+];
+
+module.exports = { registerValidator, loginValidator, changePasswordValidator };
 
