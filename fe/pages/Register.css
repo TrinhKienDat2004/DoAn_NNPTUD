@@ -1,0 +1,39 @@
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: var(--bg-color);
+}
+
+.register-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 36px;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+.select-input {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 7px;
+  border: 1px solid var(--border-color);
+  background: var(--surface);
+  font-size: 13px;
+  color: var(--text-dark);
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.select-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
+}

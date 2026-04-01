@@ -1,0 +1,109 @@
+:root {
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --primary-color: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-light: #eef2ff;
+  --bg-color: #f1f5f9;
+  --surface: #ffffff;
+  --border-color: #e2e8f0;
+  --text-dark: #1e293b;
+  --text-medium: #475569;
+  --text-light: #94a3b8;
+  --danger: #dc2626;
+  --danger-light: #fef2f2;
+  --success: #16a34a;
+  --success-light: #f0fdf4;
+  --warning: #d97706;
+  --warning-light: #fffbeb;
+  --sidebar-width: 260px;
+  --header-height: 64px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  background: var(--bg-color);
+  color: var(--text-dark);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── Common glass-panel utility (bỏ gradient) ───────────── */
+.glass-panel {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+}
+
+/* ── Buttons ────────────────────────────────────────────── */
+.btn-primary {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ── Form elements ──────────────────────────────────────── */
+.form-group { margin-bottom: 1rem; }
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-medium);
+}
+
+.form-input {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 7px;
+  border: 1px solid var(--border-color);
+  background: var(--surface);
+  font-size: 13px;
+  color: var(--text-dark);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+  font-family: inherit;
+}
+
+.form-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
+}
+
+.error-text {
+  color: var(--danger);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* ── Error message ──────────────────────────────────────── */
+.error-message {
+  background: var(--danger-light);
+  color: var(--danger);
+  padding: 10px 14px;
+  border-radius: 7px;
+  margin-bottom: 1rem;
+  font-size: 13px;
+  border: 1px solid #fecaca;
+}
