@@ -13,7 +13,19 @@ export default function Layout() {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  const [user, setUser] = useState(() => userStr ? JSON.parse(userStr) : null);
+  const [user, setUser] = useState(() => {
+    try { return userStr ? JSON.parse(userStr) : null; }
+    catch { return null; }
+  });
+
+  // Guard: chờ user load xong mới render
+  if (!user) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', color: '#888' }}>
+        Đang tải...
+      </div>
+    );
+  }
 
   useEffect(() => {
     const handleStorage = () => {
@@ -32,7 +44,7 @@ export default function Layout() {
     navigate('/login');
   };
 
-  const canManageCourses = ['ADMIN', 'GIANGVIEN'].includes(user?.roleName);
+  const canManageCourses = ['Quản trị viên', 'Giảng viên'].includes(user?.roleName);
 
   return (
     <div className="layout-container">

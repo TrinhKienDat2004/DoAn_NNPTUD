@@ -15,7 +15,7 @@ export default function Courses() {
   const [form, setForm] = useState({ code: '', title: '', description: '', category: '' });
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const canManage = ['ADMIN', 'GIANGVIEN'].includes(user.roleName);
+  const canManage = ['Quản trị viên', 'Giảng viên'].includes(user.roleName);
 
   const fetchCourses = useCallback(async () => {
     setLoading(true);
