@@ -24,7 +24,7 @@ export default function Sections() {
   });
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const canManage = ['ADMIN', 'GIANGVIEN'].includes(user.roleName);
+  const canManage = ['Quản trị viên', 'Giảng viên'].includes(user.roleName);
 
   const fetchSections = useCallback(async (pg = 1) => {
     setLoading(true);

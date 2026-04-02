@@ -113,8 +113,8 @@ export default function Enrollments() {
   const [filter, setFilter] = useState({ semester: '', courseId: '' });
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const isStudent = user.roleName === 'SINHVIEN';
-  const canManage = ['ADMIN', 'GIANGVIEN'].includes(user.roleName);
+  const isStudent = user.roleName === 'Sinh viên';
+  const canManage = ['Quản trị viên', 'Giảng viên'].includes(user.roleName);
 
   // Lấy sections
   const fetchSections = useCallback(async () => {
