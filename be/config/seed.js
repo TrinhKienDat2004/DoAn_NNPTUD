@@ -55,6 +55,7 @@ async function seedDefaultsIfEnabled() {
     'courses:manage',
     'sections:manage',
     'assignments:manage',
+    'submissions:manage',
     'grades:manage',
     'documents:upload'
   ];

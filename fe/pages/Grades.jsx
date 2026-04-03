@@ -9,7 +9,7 @@ export default function Grades() {
   const [toast, setToast] = useState({ message: '', type: 'info' });
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const isStudent = user.roleName === 'SINHVIEN';
+  const isStudent = user.roleName === 'Sinh viên' || user.roleName === 'SINHVIEN';
 
   useEffect(() => {
     fetchGrades();

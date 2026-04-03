@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Plus, Edit2, Trash2, Search, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Edit2, Trash2, Search, X, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
 import sectionsApi from '../api/sectionsApi';
 import coursesApi from '../api/coursesApi';
 import usersApi from '../api/usersApi';
@@ -7,6 +8,7 @@ import Toast from '../components/Toast';
 import './Sections.css';
 
 export default function Sections() {
+  const navigate = useNavigate();
   const [sections, setSections] = useState([]);
   const [courses, setCourses] = useState([]);
   const [teachers, setTeachers] = useState([]);
@@ -193,8 +195,14 @@ export default function Sections() {
                     <td>{s.capacity || 0}</td>
                     {canManage && (
                       <td className="action-cell">
+                        <button className="btn-icon btn-assignments" onClick={() => navigate(`/assignments?sectionId=${s._id}`)} title="Xem bài tập"><BookOpen size={16} /></button>
                         <button className="btn-icon btn-edit" onClick={() => openEdit(s)} title="Sửa"><Edit2 size={16} /></button>
                         <button className="btn-icon btn-delete" onClick={() => handleDelete(s._id)} title="Xóa"><Trash2 size={16} /></button>
+                      </td>
+                    )}
+                    {!canManage && (
+                      <td className="action-cell">
+                        <button className="btn-icon btn-assignments" onClick={() => navigate(`/assignments?sectionId=${s._id}`)} title="Học liệu & Bài tập"><BookOpen size={16} /></button>
                       </td>
                     )}
                   </tr>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Plus, Edit2, Trash2, Search, X, Download, File } from 'lucide-react';
 import assignmentsApi from '../api/assignmentsApi';
 import submissionsApi from '../api/submissionsApi';
@@ -7,6 +8,8 @@ import Toast from '../components/Toast';
 import './Assignments.css';
 
 export default function Assignments() {
+  const [searchParams] = useSearchParams();
+  const sectionId = searchParams.get('sectionId');
   const [assignments, setAssignments] = useState([]);
   const [submissions, setSubmissions] = useState({});
   const [grades, setGrades] = useState({});
@@ -28,13 +31,13 @@ export default function Assignments() {
   const [gradeForm, setGradeForm] = useState({ score: '', feedback: '' });
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const isTeacher = user.roleName === 'GIANGVIEN';
-  const isStudent = user.roleName === 'SINHVIEN';
+  const isTeacher = user.roleName === 'Giảng viên' || user.roleName === 'GIANGVIEN';
+  const isStudent = user.roleName === 'Sinh viên' || user.roleName === 'SINHVIEN';
 
   const fetchAssignments = useCallback(async () => {
     setLoading(true);
     try {
-      const resp = await assignmentsApi.getAll();
+      const resp = await assignmentsApi.getAll({ sectionId });
       setAssignments(resp.data || []);
     } catch {
       showToast('Không tải được danh sách bài tập.', 'error');
@@ -80,7 +83,7 @@ export default function Assignments() {
 
   const openCreate = () => {
     setEditingId(null);
-    setForm({ sectionId: '', title: '', description: '', dueDate: '' });
+    setForm({ sectionId: sectionId || '', title: '', description: '', dueDate: '' });
     setShowModal(true);
   };
 

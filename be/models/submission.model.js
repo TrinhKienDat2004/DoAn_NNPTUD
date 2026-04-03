@@ -7,6 +7,7 @@ const submissionSchema = new mongoose.Schema(
     fileUrl: { type: String, default: '' },
     submittedAt: { type: Date, default: Date.now },
     score: { type: Number, default: 0 },
+    feedback: { type: String, default: '' },
     isDeleted: { type: Boolean, default: false }
   },
   { timestamps: true }
