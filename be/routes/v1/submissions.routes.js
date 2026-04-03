@@ -4,12 +4,38 @@ const router = express.Router();
 const { authMiddleware } = require('../../middlewares/auth.middleware');
 const { authorize } = require('../../middlewares/authorize.middleware');
 const { submissionUpload, makeFileUrl } = require('../../middlewares/upload.middleware');
+const { validateRequest } = require('../../utils/validateRequest');
+const {
+  submitAssignmentValidator,
+  getSubmissionValidator,
+  updateSubmissionValidator
+} = require('../../validators/submissions.validator');
 const submissionsController = require('../../controllers/v1/submissions.controller');
 
 router.get('/', authMiddleware, submissionsController.list);
-router.get('/assignment/:id', authMiddleware, submissionsController.getByAssignment);
-router.get('/:id', authMiddleware, submissionsController.getById);
 
+// Student submits assignment with deadline check
+router.post(
+  '/assignment/:assignmentId/submit',
+  authMiddleware,
+  authorize({ permissions: ['submissions:manage'] }),
+  submissionUpload,
+  (req, res, next) => {
+    if (req.file) req.fileUrl = makeFileUrl('submissions', req.file.filename);
+    next();
+  },
+  submitAssignmentValidator,
+  validateRequest,
+  submissionsController.submitAssignment
+);
+
+// Get submissions for an assignment (instructor view)
+router.get('/assignment/:assignmentId', authMiddleware, submissionsController.getByAssignment);
+
+// Get single submission
+router.get('/:id', authMiddleware, getSubmissionValidator, validateRequest, submissionsController.getById);
+
+// Admin create/update submissions
 router.post(
   '/',
   authMiddleware,
@@ -22,27 +48,23 @@ router.post(
   submissionsController.create
 );
 
-router.post(
-  '/assignment/:id/submit',
+router.put(
+  '/:id',
   authMiddleware,
-  authorize({ roles: ['SINHVIEN'] }), // Only students can submit
-  submissionUpload,
-  (req, res, next) => {
-    if (req.file) req.fileUrl = makeFileUrl('submissions', req.file.filename);
-    next();
-  },
-  submissionsController.submit
+  authorize({ permissions: ['submissions:manage'] }),
+  updateSubmissionValidator,
+  validateRequest,
+  submissionsController.updateById
 );
 
-router.patch(
-  '/:id/grade',
+router.delete(
+  '/:id',
   authMiddleware,
-  authorize({ permissions: ['submissions:manage'] }), // Only teachers can grade
-  submissionsController.grade
+  authorize({ permissions: ['submissions:manage'] }),
+  getSubmissionValidator,
+  validateRequest,
+  submissionsController.deleteById
 );
-
-router.put('/:id', authMiddleware, authorize({ permissions: ['submissions:manage'] }), submissionsController.updateById);
-router.delete('/:id', authMiddleware, authorize({ permissions: ['submissions:manage'] }), submissionsController.deleteById);
 
 module.exports = router;
 
