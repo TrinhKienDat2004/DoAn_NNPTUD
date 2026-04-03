@@ -1,0 +1,677 @@
+{
+  "info": {
+    "name": "Nhóm 3 - Assignments & Grading",
+    "description": "API collection for managing assignments, submissions, and grading",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api/v1"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "assignmentId",
+      "value": ""
+    },
+    {
+      "key": "submissionId",
+      "value": ""
+    },
+    {
+      "key": "gradeId",
+      "value": ""
+    },
+    {
+      "key": "sectionId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication (Get Token)",
+      "item": [
+        {
+          "name": "Teacher Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('token', jsonData.data.token);",
+                  "    console.log('Token set for teacher');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\": \"teacher@example.com\", \"password\": \"password123\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}", "api", "v1", "auth", "login"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Student Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('studentToken', jsonData.data.token);",
+                  "    console.log('Token set for student');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\": \"student@example.com\", \"password\": \"password123\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}", "api", "v1", "auth", "login"],
+              "path": ["auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Assignments",
+      "item": [
+        {
+          "name": "Get All Assignments",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/assignments",
+              "host": ["{{baseUrl}}", "assignments"],
+              "path": ["assignments"]
+            }
+          }
+        },
+        {
+          "name": "Create Assignment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('assignmentId', jsonData.data._id);",
+                  "    console.log('Assignment created with ID:', jsonData.data._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sectionId\": \"{{sectionId}}\",\n  \"title\": \"Bài Tập 1: Giới thiệu JavaScript\",\n  \"description\": \"Yêu cầu sinh viên tìm hiểu về các khái niệm cơ bản của JavaScript và hoàn thành các bài tập nhỏ.\",\n  \"dueDate\": \"2026-04-20T23:59:59Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/assignments",
+              "host": ["{{baseUrl}}", "assignments"],
+              "path": ["assignments"]
+            }
+          }
+        },
+        {
+          "name": "Get Assignment by ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/assignments/{{assignmentId}}",
+              "host": ["{{baseUrl}}", "assignments", "{{assignmentId}}"],
+              "path": ["assignments", "{{assignmentId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Assignments by Section",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/assignments/section/{{sectionId}}",
+              "host": ["{{baseUrl}}", "assignments", "section", "{{sectionId}}"],
+              "path": ["assignments", "section", "{{sectionId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Assignment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Bài Tập 1 (Cập nhật): Giới thiệu JavaScript\",\n  \"description\": \"Yêu cầu sinh viên tìm hiểu chi tiết về các khái niệm cơ bản của JavaScript\",\n  \"dueDate\": \"2026-04-25T23:59:59Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/assignments/{{assignmentId}}",
+              "host": ["{{baseUrl}}", "assignments", "{{assignmentId}}"],
+              "path": ["assignments", "{{assignmentId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Assignment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/assignments/{{assignmentId}}",
+              "host": ["{{baseUrl}}", "assignments", "{{assignmentId}}"],
+              "path": ["assignments", "{{assignmentId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Submissions",
+      "item": [
+        {
+          "name": "Get All Submissions (Student View)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{studentToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/submissions",
+              "host": ["{{baseUrl}}", "submissions"],
+              "path": ["submissions"]
+            }
+          }
+        },
+        {
+          "name": "Get Submissions by Assignment (Teacher View)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/submissions/assignment/{{assignmentId}}",
+              "host": ["{{baseUrl}}", "submissions", "assignment", "{{assignmentId}}"],
+              "path": ["submissions", "assignment", "{{assignmentId}}"]
+            }
+          }
+        },
+        {
+          "name": "Student Submit Assignment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('submissionId', jsonData.data._id);",
+                  "    console.log('Submission created/updated with ID:', jsonData.data._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{studentToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/submissions/assignment/{{assignmentId}}/submit",
+              "host": ["{{baseUrl}}", "submissions", "assignment", "{{assignmentId}}", "submit"],
+              "path": ["submissions", "assignment", "{{assignmentId}}", "submit"]
+            },
+            "description": "Note: Replace file path in Body -> form-data -> file with actual file to upload"
+          }
+        },
+        {
+          "name": "Get Submission by ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{studentToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/submissions/{{submissionId}}",
+              "host": ["{{baseUrl}}", "submissions", "{{submissionId}}"],
+              "path": ["submissions", "{{submissionId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Grades (Scoring)",
+      "item": [
+        {
+          "name": "Get All Grades (Student's Own)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{studentToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/grades",
+              "host": ["{{baseUrl}}", "grades"],
+              "path": ["grades"]
+            }
+          }
+        },
+        {
+          "name": "Teacher Grade Submission",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('gradeId', jsonData.data._id);",
+                  "    console.log('Grade recorded with ID:', jsonData.data._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"score\": 85,\n  \"feedback\": \"Bài làm tốt! Cú pháp JavaScript đúng, logic rõ ràng. Cần cải thiện: thêm comment chi tiết hơn.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/grades/submission/{{submissionId}}",
+              "host": ["{{baseUrl}}", "grades", "submission", "{{submissionId}}"],
+              "path": ["grades", "submission", "{{submissionId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Grade by ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/grades/{{gradeId}}",
+              "host": ["{{baseUrl}}", "grades", "{{gradeId}}"],
+              "path": ["grades", "{{gradeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Grade",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"score\": 90,\n  \"feedback\": \"Bài làm tốt! Cú pháp JavaScript đúng, logic rõ ràng. Code clean và có comment tốt.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/grades/{{gradeId}}",
+              "host": ["{{baseUrl}}", "grades", "{{gradeId}}"],
+              "path": ["grades", "{{gradeId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Summary: Complete Workflow",
+      "item": [
+        {
+          "name": "Workflow: Teacher Creates Assignment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sectionId\": \"{{sectionId}}\",\n  \"title\": \"Bài Tập 1: JavaScript Basics\",\n  \"description\": \"Hoàn thành các bài tập về biến, toán tử, và điều kiện\",\n  \"dueDate\": \"2026-04-20T23:59:59Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/assignments",
+              "host": ["{{baseUrl}}", "assignments"],
+              "path": ["assignments"]
+            }
+          },
+          "description": "Step 1: Teacher creates an assignment with due date"
+        },
+        {
+          "name": "Workflow: Student Submits Assignment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{studentToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/submissions/assignment/{{assignmentId}}/submit",
+              "host": ["{{baseUrl}}", "submissions", "assignment", "{{assignmentId}}", "submit"],
+              "path": ["submissions", "assignment", "{{assignmentId}}", "submit"]
+            },
+            "description": "Step 2: Student submits their work (must be before deadline)"
+          }
+        },
+        {
+          "name": "Workflow: Teacher Grades Submission",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"score\": 88,\n  \"feedback\": \"Tốt! Code sạch, có comment. Cần thêm validation input.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/grades/submission/{{submissionId}}",
+              "host": ["{{baseUrl}}", "grades", "submission", "{{submissionId}}"],
+              "path": ["grades", "submission", "{{submissionId}}"]
+            }
+          },
+          "description": "Step 3: Teacher views submission and assigns a grade"
+        },
+        {
+          "name": "Workflow: Student Views Their Grade",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{studentToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/grades",
+              "host": ["{{baseUrl}}", "grades"],
+              "path": ["grades"]
+            }
+          },
+          "description": "Step 4: Student can now see their grades and feedback"
+        }
+      ]
+    }
+  ]
+}

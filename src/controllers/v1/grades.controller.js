@@ -10,15 +10,31 @@ async function list(req, res) {
       .populate({
         path: 'submissionId',
         match: { isDeleted: false },
-        populate: { path: 'studentId', select: '_id' }
+        populate: {
+          path: 'studentId',
+          select: '_id'
+        }
+      })
+      .populate({
+        path: 'submissionId',
+        populate: {
+          path: 'assignmentId',
+          select: 'title sectionId'
+        }
       })
       .populate('teacherId', 'username email');
 
-    const filtered = grades.filter((g) => String(g.submissionId?.studentId?._id || g.submissionId?.studentId) === String(req.user.id));
+    const filtered = grades.filter(
+      (g) =>
+        String(g.submissionId?.studentId?._id || g.submissionId?.studentId) === String(req.user.id)
+    );
     return res.status(200).json({ status: 'success', data: filtered });
   }
 
-  const docs = await Grade.find({ isDeleted: false }).populate('submissionId').populate('teacherId', 'username email');
+  const docs = await Grade.find({ isDeleted: false })
+    .populate('submissionId')
+    .populate('teacherId', 'username email')
+    .sort({ createdAt: -1 });
   return res.status(200).json({ status: 'success', data: docs });
 }
 
@@ -27,13 +43,22 @@ async function getById(req, res) {
   if (!mongoose.isValidObjectId(id)) return res.status(400).json({ status: 'fail', message: 'Invalid id' });
 
   const doc = await Grade.findOne({ _id: id, isDeleted: false })
-    .populate('submissionId', 'studentId assignmentId')
+    .populate('submissionId', 'studentId assignmentId fileUrl submittedAt')
+    .populate({
+      path: 'submissionId',
+      populate: [
+        { path: 'studentId', select: '_id username email' },
+        { path: 'assignmentId', select: 'title dueDate' }
+      ]
+    })
     .populate('teacherId', 'username email');
 
   if (!doc) return res.status(404).json({ status: 'fail', message: 'Not found' });
 
   if (req.user?.roleName === 'SINHVIEN') {
-    const submissionStudentId = doc.submissionId?.studentId?._id ? String(doc.submissionId.studentId._id) : String(doc.submissionId.studentId);
+    const submissionStudentId = doc.submissionId?.studentId?._id
+      ? String(doc.submissionId.studentId._id)
+      : String(doc.submissionId.studentId);
     if (submissionStudentId !== String(req.user.id)) {
       return res.status(403).json({ status: 'fail', message: 'Forbidden' });
     }
@@ -63,9 +88,60 @@ async function create(req, res) {
       finalScore: finalScore || 0
     },
     { new: true, upsert: true }
-  );
+  )
+    .populate('submissionId')
+    .populate('teacherId', 'username email');
 
   return res.status(201).json({ status: 'success', data: doc });
+}
+
+async function gradeSubmission(req, res) {
+  const { submissionId } = req.params;
+  const { score, feedback } = req.body || {};
+
+  if (!mongoose.isValidObjectId(submissionId)) {
+    return res.status(400).json({ status: 'fail', message: 'Invalid submissionId' });
+  }
+
+  if (score === undefined || typeof score !== 'number' || score < 0 || score > 100) {
+    return res.status(400).json({ status: 'fail', message: 'score required and must be 0-100' });
+  }
+
+  const submission = await Submission.findOne({ _id: submissionId, isDeleted: false });
+  if (!submission) {
+    return res.status(404).json({ status: 'fail', message: 'Submission not found' });
+  }
+
+  // Update or create grade
+  let doc = await Grade.findOne({ submissionId, isDeleted: false });
+
+  if (doc) {
+    // Update existing
+    doc.score = score;
+    doc.teacherId = req.user.id;
+    if (feedback) doc.feedback = feedback;
+    await doc.save();
+  } else {
+    // Create new
+    doc = await Grade.create({
+      submissionId,
+      teacherId: req.user.id,
+      componentType: 'assignment',
+      score,
+      finalScore: score,
+      feedback: feedback || ''
+    });
+  }
+
+  const populated = await Grade.findById(doc._id)
+    .populate('submissionId')
+    .populate('teacherId', 'username email');
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'Graded successfully',
+    data: populated
+  });
 }
 
 async function updateById(req, res) {
@@ -73,7 +149,14 @@ async function updateById(req, res) {
   if (!mongoose.isValidObjectId(id)) return res.status(400).json({ status: 'fail', message: 'Invalid id' });
 
   const payload = req.body || {};
-  const doc = await Grade.findOneAndUpdate({ _id: id, isDeleted: false }, payload, { new: true });
+  const doc = await Grade.findOneAndUpdate(
+    { _id: id, isDeleted: false },
+    payload,
+    { new: true }
+  )
+    .populate('submissionId')
+    .populate('teacherId', 'username email');
+
   if (!doc) return res.status(404).json({ status: 'fail', message: 'Not found' });
   return res.status(200).json({ status: 'success', data: doc });
 }
@@ -82,10 +165,14 @@ async function deleteById(req, res) {
   const { id } = req.params;
   if (!mongoose.isValidObjectId(id)) return res.status(400).json({ status: 'fail', message: 'Invalid id' });
 
-  const doc = await Grade.findOneAndUpdate({ _id: id, isDeleted: false }, { isDeleted: true }, { new: true });
+  const doc = await Grade.findOneAndUpdate(
+    { _id: id, isDeleted: false },
+    { isDeleted: true },
+    { new: true }
+  );
   if (!doc) return res.status(404).json({ status: 'fail', message: 'Not found' });
   return res.status(200).json({ status: 'success', message: 'Deleted (soft)', data: doc });
 }
 
-module.exports = { list, getById, create, updateById, deleteById };
+module.exports = { list, getById, create, updateById, deleteById, gradeSubmission };
 

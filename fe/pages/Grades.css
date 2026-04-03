@@ -1,0 +1,168 @@
+.grades-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.grades-header {
+  margin-bottom: 25px;
+}
+
+.grades-header h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.gpa-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.gpa-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.gpa-value {
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.grades-table-container {
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.grades-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.grades-table thead {
+  background-color: #f5f5f5;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.grades-table th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.grades-table tbody tr {
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
+}
+
+.grades-table tbody tr:hover {
+  background-color: #fafafa;
+}
+
+.grades-table td {
+  padding: 15px;
+  font-size: 14px;
+  color: #555;
+}
+
+.assignment-title {
+  font-weight: 500;
+  color: #333;
+}
+
+.component-type {
+  font-size: 13px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.score {
+  text-align: center;
+}
+
+.score-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.score-badge.good {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.score-badge.ok {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.score-badge.poor {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.graded-date {
+  font-size: 13px;
+  color: #999;
+  white-space: nowrap;
+}
+
+.feedback {
+  color: #777;
+  font-size: 13px;
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.loading,
+.no-data {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .grades-table {
+    font-size: 12px;
+  }
+
+  .grades-table th,
+  .grades-table td {
+    padding: 10px;
+  }
+
+  .gpa-card {
+    text-align: center;
+  }
+
+  .gpa-value {
+    font-size: 36px;
+  }
+
+  .feedback {
+    font-size: 11px;
+    max-width: 150px;
+  }
+
+  .grades-table-container {
+    overflow-x: auto;
+  }
+}

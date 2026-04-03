@@ -6,6 +6,8 @@ import Profile from './pages/Profile';
 import Courses from './pages/Courses';
 import Sections from './pages/Sections';
 import Enrollments from './pages/Enrollments';
+import Assignments from './pages/Assignments';
+import Grades from './pages/Grades';
 
 const Dashboard = () => (
   <div>
@@ -29,6 +31,8 @@ function App() {
           <Route path="courses" element={<Courses />} />
           <Route path="sections" element={<Sections />} />
           <Route path="enrollments" element={<Enrollments />} />
+          <Route path="assignments" element={<Assignments />} />
+          <Route path="grades" element={<Grades />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
