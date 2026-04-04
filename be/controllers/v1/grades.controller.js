@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const Grade = require('../../models/grade.model');
 const Submission = require('../../models/submission.model');
-
 const Notification = require('../../models/notification.model');
 
 async function list(req, res) {
@@ -45,16 +44,15 @@ async function getById(req, res) {
 }
 
 async function create(req, res) {
-  const { submissionId, componentType, score, finalScore } = req.body || {};
+  const { submissionId, componentType, score, finalScore, feedback } = req.body || {};
   if (!submissionId || score === undefined) {
     return res.status(400).json({ status: 'fail', message: 'submissionId and score required' });
   }
   if (!mongoose.isValidObjectId(submissionId)) return res.status(400).json({ status: 'fail', message: 'Invalid submissionId' });
 
-  const submission = await Submission.findOne({ _id: submissionId, isDeleted: false });
+  const submission = await Submission.findOne({ _id: submissionId, isDeleted: false }).populate('assignmentId', 'title');
   if (!submission) return res.status(404).json({ status: 'fail', message: 'Submission not found' });
 
-  // Cập nhật hoặc tạo mới Grade
   const doc = await Grade.findOneAndUpdate(
     { submissionId, isDeleted: false },
     {
@@ -62,22 +60,74 @@ async function create(req, res) {
       teacherId: req.user.id,
       componentType: componentType || 'assignment',
       score,
-      finalScore: finalScore || 0
+      finalScore: finalScore || 0,
+      feedback: feedback || ''
     },
     { new: true, upsert: true }
   );
 
-  // ---> THÊM LOGIC GỬI THÔNG BÁO Ở ĐÂY <---
+  // Tạo thông báo cho sinh viên
   if (doc && submission.studentId) {
+    const assignmentTitle = submission.assignmentId?.title || 'một bài tập';
     await Notification.create({
       userId: submission.studentId,
-      title: 'Có điểm mới',
-      content: `Bài tập của bạn đã được chấm. Điểm: ${score}`,
+      title: 'Bạn có điểm mới!',
+      content: `Giáo viên vừa cập nhật điểm cho bài nộp của bạn trong: ${assignmentTitle}. Điểm của bạn là: ${score}/100.`,
       isRead: false
     });
   }
 
   return res.status(201).json({ status: 'success', data: doc });
+}
+
+async function gradeSubmission(req, res) {
+  const { submissionId } = req.params;
+  const { score, feedback } = req.body || {};
+
+  if (!mongoose.isValidObjectId(submissionId)) {
+    return res.status(400).json({ status: 'fail', message: 'Invalid submissionId' });
+  }
+
+  if (score === undefined || typeof score !== 'number' || score < 0 || score > 100) {
+    return res.status(400).json({ status: 'fail', message: 'score required and must be 0-100' });
+  }
+
+  const submission = await Submission.findOne({ _id: submissionId, isDeleted: false }).populate('assignmentId', 'title');
+  if (!submission) {
+    return res.status(404).json({ status: 'fail', message: 'Submission not found' });
+  }
+
+  let doc = await Grade.findOne({ submissionId, isDeleted: false });
+
+  if (doc) {
+    doc.score = score;
+    doc.teacherId = req.user.id;
+    if (feedback) doc.feedback = feedback;
+    await doc.save();
+  } else {
+    doc = await Grade.create({
+      submissionId,
+      teacherId: req.user.id,
+      componentType: 'assignment',
+      score,
+      finalScore: score,
+      feedback: feedback || ''
+    });
+  }
+
+  const populated = await Grade.findById(doc._id).populate('submissionId').populate('teacherId', 'username email');
+
+  if (submission.studentId) {
+    const assignmentTitle = submission.assignmentId?.title || 'một bài tập';
+    await Notification.create({
+      userId: submission.studentId,
+      title: 'Bạn có điểm mới!',
+      content: `Giáo viên vừa cập nhật điểm cho bài nộp của bạn trong: ${assignmentTitle}. Điểm của bạn là: ${score}/100.`,
+      isRead: false
+    });
+  }
+
+  return res.status(200).json({ status: 'success', message: 'Graded successfully', data: populated });
 }
 
 async function updateById(req, res) {
@@ -99,5 +149,4 @@ async function deleteById(req, res) {
   return res.status(200).json({ status: 'success', message: 'Deleted (soft)', data: doc });
 }
 
-module.exports = { list, getById, create, updateById, deleteById };
-
+module.exports = { list, getById, create, updateById, deleteById, gradeSubmission };
