@@ -1,14 +1,20 @@
 import { useState, useEffect } from 'react';
-import axiosClient from '../api/axiosClient';
+import axiosClient, { uploadFile } from '../api/axiosClient'; // Đừng quên import uploadFile
 import Toast from '../components/Toast';
 import './Profile.css';
 
 export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false); // Thêm state cho upload ảnh
   const [toast, setToast] = useState({ message: '', type: 'info' });
-  const [userData, setUserData] = useState({ username: '', email: '', roleName: '' });
+  
+  const [userData, setUserData] = useState({ username: '', email: '', roleName: '', avatarUrl: '' });
   const [profileData, setProfileData] = useState({});
+  
+  // State quản lý ảnh
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState('');
 
   useEffect(() => { fetchProfile(); }, []);
 
@@ -20,8 +26,11 @@ export default function Profile() {
         setUserData({
           username: user.username || '',
           email: user.email || '',
-          roleName: user.roleName || ''
+          roleName: user.roleName || '',
+          avatarUrl: user.avatarUrl || '' // Lấy thêm avatarUrl
         });
+        setPreviewUrl(user.avatarUrl || ''); // Hiển thị ảnh hiện tại
+        
         if (profile) {
           const { dob } = profile;
           setProfileData({
@@ -39,6 +48,51 @@ export default function Profile() {
 
   const handleProfileChange = (e) => {
     setProfileData({ ...profileData, [e.target.name]: e.target.value });
+  };
+
+  // --- HÀM XỬ LÝ CHỌN ẢNH ---
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        return setToast({ message: 'File ảnh quá lớn (giới hạn 5MB).', type: 'error' });
+      }
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file)); // Hiển thị ảnh tạm thời
+    }
+  };
+
+  // --- HÀM UPLOAD ẢNH ĐẠI DIỆN ---
+  const handleAvatarUpload = async () => {
+    if (!selectedFile) return;
+    setUploadingAvatar(true);
+    try {
+      // 1. Upload ảnh lên server để lấy URL
+      const uploadRes = await uploadFile(selectedFile, 'avatar');
+      
+      if (uploadRes.status === 'success') {
+        const newAvatarUrl = uploadRes.data.url;
+        
+        // 2. Cập nhật User Model với avatar mới
+        const locUser = JSON.parse(localStorage.getItem('user') || '{}');
+        const updateRes = await axiosClient.put(`/users/${locUser._id}`, { avatarUrl: newAvatarUrl });
+        
+        if (updateRes.status === 'success') {
+          setToast({ message: 'Cập nhật ảnh đại diện thành công!', type: 'success' });
+          setUserData(prev => ({ ...prev, avatarUrl: newAvatarUrl }));
+          setSelectedFile(null); // Ẩn nút lưu ảnh đi
+
+          // Cập nhật lại localStorage để Header nhận diện ảnh mới
+          locUser.avatarUrl = newAvatarUrl;
+          localStorage.setItem('user', JSON.stringify(locUser));
+          window.dispatchEvent(new Event('storage')); 
+        }
+      }
+    } catch (err) {
+      setToast({ message: err.response?.data?.message || 'Lỗi tải ảnh lên.', type: 'error' });
+    } finally {
+      setUploadingAvatar(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -68,8 +122,8 @@ export default function Profile() {
   }
 
   const isAdmin = userData.roleName === 'Quản trị viên';
-  const isGiangVien = userData.roleName === 'Giảng viên';
-  const isSinhVien = userData.roleName === 'Sinh viên';
+  const isGiangVien = userData.roleName === 'Giảng viên' || userData.roleName === 'GIANGVIEN';
+  const isSinhVien = userData.roleName === 'Sinh viên' || userData.roleName === 'SINHVIEN';
 
   return (
     <div className="profile-page">
@@ -77,11 +131,55 @@ export default function Profile() {
 
       <div className="profile-card">
         {/* Header — tên + avatar */}
-        <div className="profile-header">
-          <div className="avatar-preview">
-            {userData.username ? userData.username.charAt(0).toUpperCase() : 'U'}
+        <div className="profile-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          
+          {/* Khu vực hiển thị Avatar */}
+          <div 
+            className="avatar-preview" 
+            style={{ overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+          >
+            {previewUrl ? (
+              <img src={previewUrl} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              userData.username ? userData.username.charAt(0).toUpperCase() : 'U'
+            )}
           </div>
-          <h2 className="profile-username">{userData.username}</h2>
+
+          {/* Nút Đổi Avatar */}
+          <input 
+            type="file" 
+            id="avatarUpload" 
+            accept="image/*" 
+            style={{ display: 'none' }} 
+            onChange={handleFileChange} 
+          />
+          <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
+            <label 
+              htmlFor="avatarUpload" 
+              className="btn-secondary" 
+              style={{ cursor: 'pointer', fontSize: '13px', color: '#3b82f6', textDecoration: 'underline' }}
+            >
+              Chọn ảnh mới
+            </label>
+            
+            {/* Chỉ hiện nút Lưu khi người dùng đã chọn ảnh mới */}
+            {selectedFile && (
+              <button 
+                type="button" 
+                onClick={handleAvatarUpload} 
+                disabled={uploadingAvatar}
+                style={{
+                  fontSize: '13px', padding: '2px 10px', 
+                  backgroundColor: '#10b981', color: 'white', 
+                  border: 'none', borderRadius: '4px', cursor: 'pointer'
+                }}
+              >
+                {uploadingAvatar ? 'Đang tải...' : 'Lưu ảnh này'}
+              </button>
+            )}
+          </div>
+
+          <h2 className="profile-username" style={{ marginTop: '15px' }}>{userData.username}</h2>
           <span className="profile-role-badge">{userData.roleName}</span>
         </div>
 
@@ -92,8 +190,8 @@ export default function Profile() {
           {profileData.giangVienCode && <span className="chip chip-info">GV: {profileData.giangVienCode}</span>}
         </div>
 
+        {/* Form nhập liệu của bạn được giữ nguyên bên dưới */}
         <form onSubmit={handleSubmit} className="profile-form">
-          {/* Giảng viên */}
           {isGiangVien && (
             <>
               <p className="section-label">Thông tin giảng viên</p>
@@ -120,7 +218,6 @@ export default function Profile() {
             </>
           )}
 
-          {/* Sinh viên */}
           {isSinhVien && (
             <>
               <p className="section-label">Thông tin sinh viên</p>

@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const Grade = require('../../models/grade.model');
 const Submission = require('../../models/submission.model');
 
+const Notification = require('../../models/notification.model');
+
 async function list(req, res) {
   const roleName = req.user?.roleName || '';
   if (roleName === 'SINHVIEN') {
@@ -52,7 +54,7 @@ async function create(req, res) {
   const submission = await Submission.findOne({ _id: submissionId, isDeleted: false });
   if (!submission) return res.status(404).json({ status: 'fail', message: 'Submission not found' });
 
-  // Upsert by submissionId (unique).
+  // Cập nhật hoặc tạo mới Grade
   const doc = await Grade.findOneAndUpdate(
     { submissionId, isDeleted: false },
     {
@@ -64,6 +66,16 @@ async function create(req, res) {
     },
     { new: true, upsert: true }
   );
+
+  // ---> THÊM LOGIC GỬI THÔNG BÁO Ở ĐÂY <---
+  if (doc && submission.studentId) {
+    await Notification.create({
+      userId: submission.studentId,
+      title: 'Có điểm mới',
+      content: `Bài tập của bạn đã được chấm. Điểm: ${score}`,
+      isRead: false
+    });
+  }
 
   return res.status(201).json({ status: 'success', data: doc });
 }

@@ -1,3 +1,4 @@
+console.log('INDEX ROUTES LOADED');
 const express = require('express');
 const router = express.Router();
 
@@ -17,6 +18,8 @@ const gradesRoutes = require('./grades.routes');
 const documentsRoutes = require('./documents.routes');
 const notificationsRoutes = require('./notifications.routes');
 
+const uploadRoutes = require('./upload.routes');
+
 router.use('/auth', authRoutes);
 router.use('/users', usersRoutes);
 router.use('/roles', rolesRoutes);
@@ -32,6 +35,8 @@ router.use('/submissions', submissionsRoutes);
 router.use('/grades', gradesRoutes);
 router.use('/documents', documentsRoutes);
 router.use('/notifications', notificationsRoutes);
+
+router.use('/upload', uploadRoutes);
 
 module.exports = router;
 
