@@ -9,6 +9,11 @@ async function list(req, res) {
   // Giảng viên chỉ thấy các lớp mình phụ trách
   if (roleName === 'GIANGVIEN') {
     filter.teacherId = req.user.id;
+  } else if (roleName === 'SINHVIEN' && req.query.myClasses === 'true') {
+    // Sinh viên chỉ thấy lớp mình đăng ký nếu đang ở trang Lớp học của tôi
+    const enrollments = await Enrollment.find({ studentId: req.user.id, status: 'ENROLLED', isDeleted: false });
+    const enrolledSectionIds = enrollments.map(e => e.sectionId);
+    filter._id = { $in: enrolledSectionIds };
   }
 
   // Lọc theo query params

@@ -159,6 +159,7 @@ async function seedDefaultsIfEnabled() {
       { courseIdx: 1, semester: '20242', capacity: 40, startDate: '2024-08-01', endDate: '2024-12-15' }
     ];
     let sectionCount = 0;
+    const sectionDocs = [];
     for (const s of sampleSections) {
       const course = courseDocs[s.courseIdx];
       if (!course) continue;
@@ -166,7 +167,7 @@ async function seedDefaultsIfEnabled() {
         courseId: course._id, semester: s.semester, isDeleted: false
       });
       if (!existing) {
-        await CourseSection.create({
+        const newSec = await CourseSection.create({
           courseId: course._id,
           teacherId: gv._id,
           semester: s.semester,
@@ -174,10 +175,13 @@ async function seedDefaultsIfEnabled() {
           startDate: s.startDate,
           endDate: s.endDate
         });
+        sectionDocs.push(newSec);
         sectionCount++;
+      } else {
+        sectionDocs.push(existing);
       }
     }
-    console.log(`Seeded ${sectionCount} lớp học phần mẫu (học kỳ ${currentSemester})`);
+    console.log(`Seeded ${sectionCount} lớp học phần mẫu mới (học kỳ ${currentSemester})`);
   }
 }
 

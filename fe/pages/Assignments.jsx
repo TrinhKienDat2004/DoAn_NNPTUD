@@ -191,7 +191,14 @@ export default function Assignments() {
   return (
     <div className="assignments-container">
       <div className="assignments-header">
-        <h1>Bài Tập</h1>
+        <div>
+          <h1>Bài Tập</h1>
+          {sectionId && assignments.length > 0 && assignments[0].sectionId?.courseId?.title && (
+            <p style={{ color: 'var(--grey-600)', marginTop: '0.25rem' }}>
+              Môn học: {assignments[0].sectionId.courseId.title}
+            </p>
+          )}
+        </div>
         {isTeacher && (
           <button onClick={openCreate} className="btn-primary">
             <Plus size={18} /> Tạo Bài Tập
@@ -218,7 +225,14 @@ export default function Assignments() {
           {filteredAssignments.map(assignment => (
             <div key={assignment._id} className="assignment-card">
               <div className="assignment-header">
-                <h3>{assignment.title}</h3>
+                <div className="assignment-title-container">
+                  <h3>{assignment.title}</h3>
+                  {assignment.sectionId?.courseId && (
+                    <span className="assignment-course-badge" style={{ display: 'inline-block', padding: '2px 8px', backgroundColor: 'var(--primary-100)', color: 'var(--primary-700)', borderRadius: '4px', fontSize: '0.8rem', marginTop: '4px' }}>
+                      {assignment.sectionId.courseId.title}
+                    </span>
+                  )}
+                </div>
                 {isTeacher && (
                   <div className="action-buttons">
                     <button onClick={() => openEdit(assignment)} title="Sửa">

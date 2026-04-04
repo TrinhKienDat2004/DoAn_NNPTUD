@@ -10,7 +10,10 @@ async function list(req, res) {
       .populate({
         path: 'submissionId',
         match: { isDeleted: false },
-        populate: { path: 'studentId', select: '_id' }
+        populate: [
+          { path: 'studentId', select: '_id username' },
+          { path: 'assignmentId', populate: { path: 'sectionId', populate: { path: 'courseId' } } }
+        ]
       })
       .populate('teacherId', 'username email');
 
@@ -18,7 +21,15 @@ async function list(req, res) {
     return res.status(200).json({ status: 'success', data: filtered });
   }
 
-  const docs = await Grade.find({ isDeleted: false }).populate('submissionId').populate('teacherId', 'username email');
+  const docs = await Grade.find({ isDeleted: false })
+    .populate({
+      path: 'submissionId',
+      populate: [
+        { path: 'studentId', select: '_id username' },
+        { path: 'assignmentId', populate: { path: 'sectionId', populate: { path: 'courseId' } } }
+      ]
+    })
+    .populate('teacherId', 'username email');
   return res.status(200).json({ status: 'success', data: docs });
 }
 

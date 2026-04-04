@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Outlet, Navigate, Link, useNavigate, useLocation } from 'react-router-dom';
-import { Home, BookOpen, Users, FileText, User, LogOut, ClipboardList, CheckSquare, Award } from 'lucide-react';
+import { Home, BookOpen, Users, FileText, User, LogOut, ClipboardList, CheckSquare, Award, GraduationCap } from 'lucide-react';
 import './Layout.css';
 
 export default function Layout() {
@@ -75,6 +75,9 @@ export default function Layout() {
           </Link>
 
           <div className="nav-label">Học Tập</div>
+          <Link to="/my-classes" className={`nav-item ${location.pathname === '/my-classes' ? 'active' : ''}`}>
+            <GraduationCap size={20} /> Lớp học của tôi
+          </Link>
           <Link to="/assignments" className={`nav-item ${location.pathname === '/assignments' ? 'active' : ''}`}>
             <CheckSquare size={20} /> Bài Tập
           </Link>

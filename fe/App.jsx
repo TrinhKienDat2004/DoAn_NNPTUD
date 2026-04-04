@@ -8,6 +8,7 @@ import Sections from './pages/Sections';
 import Enrollments from './pages/Enrollments';
 import Assignments from './pages/Assignments';
 import Grades from './pages/Grades';
+import MyClasses from './pages/MyClasses';
 
 const Dashboard = () => (
   <div>
@@ -31,6 +32,7 @@ function App() {
           <Route path="courses" element={<Courses />} />
           <Route path="sections" element={<Sections />} />
           <Route path="enrollments" element={<Enrollments />} />
+          <Route path="my-classes" element={<MyClasses />} />
           <Route path="assignments" element={<Assignments />} />
           <Route path="grades" element={<Grades />} />
         </Route>

@@ -26,7 +26,13 @@ async function list(req, res) {
   // ─────────────────────────────────────────────────────────
 
   const docs = await Enrollment.find(filter)
-    .populate('sectionId')
+    .populate({
+      path: 'sectionId',
+      populate: [
+        { path: 'courseId', select: 'code title' },
+        { path: 'teacherId', select: 'username email' }
+      ]
+    })
     .populate('studentId', 'username email roleId')
     .sort({ createdAt: -1 })
     .skip(skip)

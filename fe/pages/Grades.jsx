@@ -57,6 +57,7 @@ export default function Grades() {
           <table className="grades-table">
             <thead>
               <tr>
+                <th>Môn Học</th>
                 <th>Bài Tập</th>
                 <th>Loại</th>
                 <th>Điểm</th>
@@ -67,6 +68,9 @@ export default function Grades() {
             <tbody>
               {grades.map(grade => (
                 <tr key={grade._id} className="grade-row">
+                  <td className="course-title">
+                    {grade.submissionId?.assignmentId?.sectionId?.courseId?.title || 'N/A'}
+                  </td>
                   <td className="assignment-title">
                     {grade.submissionId?.assignmentId?.title || 'N/A'}
                   </td>
