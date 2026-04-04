@@ -1,15 +1,18 @@
 const { makeFileUrl } = require('../../middlewares/upload.middleware');
+const User = require('../../models/user.model'); // <-- THÊM DÒNG NÀY
 
 async function uploadFile(req, res) {
   if (!req.file) {
     return res.status(400).json({ status: 'fail', message: 'Không tìm thấy file tải lên.' });
   }
 
-  // Tách tên thư mục đích (avatars, documents, submissions) từ đường dẫn lưu
   const destSubdir = req.file.destination.split('/').pop() || 'documents';
-  
-  // Tạo URL để frontend lưu vào database
   const fileUrl = makeFileUrl(destSubdir, req.file.filename);
+
+  // ---> THÊM ĐOẠN LOGIC NÀY: TỰ ĐỘNG LƯU LINK ẢNH VÀO DB CHO USER <---
+  if (req.user && req.user.id && destSubdir === 'avatars') {
+    await User.findByIdAndUpdate(req.user.id, { avatarUrl: fileUrl });
+  }
 
   return res.status(200).json({
     status: 'success',

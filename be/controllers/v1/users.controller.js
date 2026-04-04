@@ -51,6 +51,9 @@ async function updateMyProfile(req, res) {
     profile = await TeacherProfile.findOneAndUpdate({ userId: id, isDeleted: false }, payload, { new: true });
   }
 
+  if (payload.avatarUrl) {
+    await User.findByIdAndUpdate(id, { avatarUrl: payload.avatarUrl });
+  }
   // Allow updating user username as well
   if (payload.username) {
     await User.findByIdAndUpdate(id, { username: payload.username });
