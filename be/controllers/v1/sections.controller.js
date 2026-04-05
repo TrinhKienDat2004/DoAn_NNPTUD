@@ -19,14 +19,12 @@ async function list(req, res) {
     filter.semester = req.query.semester;
   }
 
-  // ─── Pagination: limit 10 ───────────────────────────────
   const page = parseInt(req.query.page) || 1;
   const limit = Math.min(parseInt(req.query.limit) || 10, 50);
   const skip = (page - 1) * limit;
 
   const totalDocs = await CourseSection.countDocuments(filter);
   const totalPages = Math.ceil(totalDocs / limit);
-  // ─────────────────────────────────────────────────────────
 
   const sections = await CourseSection.find(filter)
     .populate('courseId', 'code title')

@@ -6,7 +6,6 @@ import coursesApi from '../api/coursesApi';
 import Toast from '../components/Toast';
 import './Enrollments.css';
 
-// ── Tree node: section row ─────────────────────────────────
 function SectionRow({ section, enrolledSectionIds, enrolling, onEnroll, onCancel, myEnrollments }) {
   const enrolledCount = section.enrolledCount || 0;
   const capacity = section.capacity || 0;
@@ -61,7 +60,6 @@ function SectionRow({ section, enrolledSectionIds, enrolling, onEnroll, onCancel
   );
 }
 
-// ── Course group node ─────────────────────────────────────
 function CourseGroup({ course, sections, enrolledSectionIds, enrolling, onEnroll, onCancel, myEnrollments, defaultOpen }) {
   const [open, setOpen] = useState(defaultOpen);
   const totalSections = sections.length;
@@ -102,7 +100,6 @@ function CourseGroup({ course, sections, enrolledSectionIds, enrolling, onEnroll
   );
 }
 
-// ── Main Enrollments page ─────────────────────────────────
 export default function Enrollments() {
   const [sections, setSections] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -156,8 +153,7 @@ export default function Enrollments() {
 
   const enrolledSectionIds = new Set(myEnrollments.map((e) => e.sectionId?._id));
 
-  // ── Group sections by course ────────────────────────────
-  const grouped = {};
+    const grouped = {};
   for (const s of sections) {
     const cid = s.courseId?._id || '__none__';
     if (!grouped[cid]) {
@@ -302,7 +298,6 @@ export default function Enrollments() {
   );
 }
 
-// ── Bảng đăng ký chi tiết cho Admin/GiangVien ────────────
 function AdminEnrollmentsTable() {
   const [enrollments, setEnrollments] = useState([]);
   const [loading, setLoading] = useState(true);

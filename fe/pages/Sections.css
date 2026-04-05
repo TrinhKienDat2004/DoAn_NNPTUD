@@ -1,11 +1,9 @@
 .sections-page { display: flex; flex-direction: column; gap: 20px; }
 
-/* ── Page header ───────────────────────────────────────── */
 .page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
 .page-title { font-size: 18px; font-weight: 700; color: var(--text-dark); }
 .page-subtitle { color: var(--text-light); font-size: 13px; margin-top: 3px; }
 
-/* ── Filters ───────────────────────────────────────────── */
 .filter-row { display: flex; gap: 10px; align-items: center; }
 .filter-row > * { flex: 1; min-width: 0; }
 .search-bar { position: relative; flex: 1; }
@@ -13,7 +11,6 @@
 .search-input { padding-left: 36px !important; }
 .filter-select { flex: 0 0 260px; }
 
-/* ── Table ─────────────────────────────────────────────── */
 .table-wrapper {
   overflow-x: auto;
   border: 1px solid var(--border-color);
@@ -65,7 +62,6 @@
 .empty-row { text-align: center; color: var(--text-light); padding: 28px !important; font-size: 13px; }
 .loading-state { text-align: center; padding: 28px; color: var(--text-light); font-size: 13px; }
 
-/* ── Modal ─────────────────────────────────────────────── */
 .modal-overlay {
   position: fixed; inset: 0;
   background: rgba(0,0,0,0.4);
@@ -94,7 +90,6 @@
 }
 .btn-secondary:hover { background: var(--border-color); }
 
-/* ── Pagination ────────────────────────────────────────── */
 .pagination-bar {
   display: flex; align-items: center; justify-content: space-between;
   padding: 10px 14px;

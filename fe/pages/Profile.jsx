@@ -1,18 +1,17 @@
 import { useState, useEffect } from 'react';
-import axiosClient, { uploadFile } from '../api/axiosClient'; // Đừng quên import uploadFile
+import axiosClient, { uploadFile } from '../api/axiosClient';
 import Toast from '../components/Toast';
 import './Profile.css';
 
 export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploadingAvatar, setUploadingAvatar] = useState(false); // Thêm state cho upload ảnh
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [toast, setToast] = useState({ message: '', type: 'info' });
   
   const [userData, setUserData] = useState({ username: '', email: '', roleName: '', avatarUrl: '' });
   const [profileData, setProfileData] = useState({});
   
-  // State quản lý ảnh
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
 
@@ -27,9 +26,9 @@ export default function Profile() {
           username: user.username || '',
           email: user.email || '',
           roleName: user.roleName || '',
-          avatarUrl: user.avatarUrl || '' // Lấy thêm avatarUrl
+          avatarUrl: user.avatarUrl || ''
         });
-        setPreviewUrl(user.avatarUrl || ''); // Hiển thị ảnh hiện tại
+        setPreviewUrl(user.avatarUrl || '');
         
         if (profile) {
           const { dob } = profile;
@@ -50,7 +49,6 @@ export default function Profile() {
     setProfileData({ ...profileData, [e.target.name]: e.target.value });
   };
 
-  // --- HÀM XỬ LÝ CHỌN ẢNH ---
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -58,31 +56,27 @@ export default function Profile() {
         return setToast({ message: 'File ảnh quá lớn (giới hạn 5MB).', type: 'error' });
       }
       setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file)); // Hiển thị ảnh tạm thời
+      setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
-  // --- HÀM UPLOAD ẢNH ĐẠI DIỆN ---
   const handleAvatarUpload = async () => {
     if (!selectedFile) return;
     setUploadingAvatar(true);
     try {
-      // 1. Upload ảnh lên server để lấy URL
       const uploadRes = await uploadFile(selectedFile, 'avatar');
       
       if (uploadRes.status === 'success') {
         const newAvatarUrl = uploadRes.data.url;
         
-        // 2. Cập nhật User Model với avatar mới
         const locUser = JSON.parse(localStorage.getItem('user') || '{}');
         const updateRes = await axiosClient.put(`/users/${locUser._id}`, { avatarUrl: newAvatarUrl });
         
         if (updateRes.status === 'success') {
           setToast({ message: 'Cập nhật ảnh đại diện thành công!', type: 'success' });
           setUserData(prev => ({ ...prev, avatarUrl: newAvatarUrl }));
-          setSelectedFile(null); // Ẩn nút lưu ảnh đi
+          setSelectedFile(null);
 
-          // Cập nhật lại localStorage để Header nhận diện ảnh mới
           locUser.avatarUrl = newAvatarUrl;
           localStorage.setItem('user', JSON.stringify(locUser));
           window.dispatchEvent(new Event('storage')); 
@@ -130,10 +124,8 @@ export default function Profile() {
       <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'info' })} />
 
       <div className="profile-card">
-        {/* Header — tên + avatar */}
         <div className="profile-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           
-          {/* Khu vực hiển thị Avatar */}
           <div 
             className="avatar-preview" 
             style={{ overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
@@ -145,7 +137,6 @@ export default function Profile() {
             )}
           </div>
 
-          {/* Nút Đổi Avatar */}
           <input 
             type="file" 
             id="avatarUpload" 
@@ -162,7 +153,6 @@ export default function Profile() {
               Chọn ảnh mới
             </label>
             
-            {/* Chỉ hiện nút Lưu khi người dùng đã chọn ảnh mới */}
             {selectedFile && (
               <button 
                 type="button" 
@@ -183,14 +173,12 @@ export default function Profile() {
           <span className="profile-role-badge">{userData.roleName}</span>
         </div>
 
-        {/* Thông tin cơ bản */}
         <div className="profile-chips">
           <span className="chip chip-email">{userData.email}</span>
           {profileData.mssv && <span className="chip chip-info">MSSV: {profileData.mssv}</span>}
           {profileData.giangVienCode && <span className="chip chip-info">GV: {profileData.giangVienCode}</span>}
         </div>
 
-        {/* Form nhập liệu của bạn được giữ nguyên bên dưới */}
         <form onSubmit={handleSubmit} className="profile-form">
           {isGiangVien && (
             <>

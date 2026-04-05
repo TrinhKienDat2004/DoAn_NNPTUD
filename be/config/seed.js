@@ -91,7 +91,6 @@ async function seedDefaultsIfEnabled() {
     console.log('Seeded admin@gmail.com / admin123');
   }
 
-  // ─── Seed giảng viên mẫu ───────────────────────────────
   const gvEmail = 'giangvien@gmail.com';
   const existingGV = await User.findOne({ email: gvEmail });
   if (!existingGV) {
@@ -104,7 +103,6 @@ async function seedDefaultsIfEnabled() {
     });
     console.log('Seeded giangvien@example.com / gv123456');
 
-    // ─── Seed sinh viên mẫu ──────────────────────────────
     const svEmails = [
       { email: 'sv01@example.com', username: 'Trần Minh Tuấn' },
       { email: 'sv02@example.com', username: 'Lê Thị Hương' },
@@ -124,7 +122,6 @@ async function seedDefaultsIfEnabled() {
     }
     console.log('Seeded 3 sinh viên mẫu (sv01-03@example.com / sv123456)');
 
-    // ─── Seed môn học mẫu ─────────────────────────────────
     const sampleCourses = [
       { code: 'CS101', title: 'Nhập môn Lập trình', description: 'Giới thiệu các khái niệm cơ bản về lập trình và thuật toán.', category: 'Công nghệ thông tin' },
       { code: 'CS201', title: 'Cấu trúc Dữ liệu & Giải thuật', description: 'Nghiên cứu các cấu trúc dữ liệu và thuật toán nâng cao.', category: 'Công nghệ thông tin' },
@@ -145,7 +142,6 @@ async function seedDefaultsIfEnabled() {
     }
     console.log(`Seeded ${courseDocs.length} môn học mẫu`);
 
-    // ─── Seed lớp học phần mẫu ────────────────────────────
     const currentSemester = '20251';
     const sampleSections = [
       { courseIdx: 0, semester: currentSemester, capacity: 60, startDate: '2025-01-15', endDate: '2025-05-30' },

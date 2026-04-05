@@ -22,7 +22,6 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
-/* ── Header ──────────────────────────────────────────── */
 .profile-header {
   background: var(--primary-light);
   padding: 28px 24px 20px;
@@ -64,7 +63,6 @@
   border: 1px solid var(--border-color);
 }
 
-/* ── Chips ───────────────────────────────────────────── */
 .profile-chips {
   display: flex;
   align-items: center;
@@ -99,7 +97,6 @@
   border: 1px solid var(--border-color);
 }
 
-/* ── Form ────────────────────────────────────────────── */
 .profile-form { padding: 20px 24px 24px; }
 
 .divider {

@@ -7,7 +7,6 @@ const axiosClient = axios.create({
   },
 });
 
-// Interceptor for Request (Attach Token)
 axiosClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -21,14 +20,12 @@ axiosClient.interceptors.request.use(
   }
 );
 
-// Interceptor for Response (Handle 401)
 axiosClient.interceptors.response.use(
   (response) => {
     return response.data; // Return only the data part
   },
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Force logout if token is invalid or expired
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login'; 
@@ -37,7 +34,6 @@ axiosClient.interceptors.response.use(
   }
 );
 
-// ---> THÊM ĐOẠN NÀY ĐỂ HỖ TRỢ UPLOAD FILE <---
 export const uploadFile = async (file, type = 'avatar') => {
   const formData = new FormData();
   const keyName = type === 'avatar' ? 'avatar' : 'file';

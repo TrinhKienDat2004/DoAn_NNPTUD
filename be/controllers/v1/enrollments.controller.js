@@ -16,14 +16,12 @@ async function list(req, res) {
     }
   }
 
-  // ─── Pagination: limit 10 ───────────────────────────────
   const page = parseInt(req.query.page) || 1;
   const limit = Math.min(parseInt(req.query.limit) || 10, 50);
   const skip = (page - 1) * limit;
 
   const totalDocs = await Enrollment.countDocuments(filter);
   const totalPages = Math.ceil(totalDocs / limit);
-  // ─────────────────────────────────────────────────────────
 
   const docs = await Enrollment.find(filter)
     .populate('sectionId')
@@ -49,7 +47,6 @@ async function create(req, res) {
     return res.status(400).json({ status: 'fail', message: 'studentId required' });
   }
 
-  // ─── Capacity check ───────────────────────────────────────
   const enrolledCount = await Enrollment.countDocuments({
     sectionId,
     status: 'ENROLLED',
@@ -61,9 +58,7 @@ async function create(req, res) {
       message: 'Lớp học phần đã đầy sĩ số. Không thể đăng ký thêm.'
     });
   }
-  // ──────────────────────────────────────────────────────────
 
-  // ─── Kiểm tra đăng ký đã tồn tại ─────────────────────
   // Tìm bất kể isDeleted để xử lý re-enroll sau khi hủy
   const existing = await Enrollment.findOne({ studentId, sectionId });
   if (existing) {

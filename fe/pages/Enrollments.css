@@ -1,11 +1,9 @@
 .enrollments-page { display: flex; flex-direction: column; gap: 20px; }
 
-/* ── Page header ───────────────────────────────────────── */
 .page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
 .page-title { font-size: 18px; font-weight: 700; color: var(--text-dark); }
 .page-subtitle { color: var(--text-light); font-size: 13px; margin-top: 3px; }
 
-/* ── Stats row ─────────────────────────────────────────── */
 .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .stat-card {
   background: var(--surface);
@@ -27,12 +25,10 @@
 .stat-value { font-size: 22px; font-weight: 700; color: var(--text-dark); line-height: 1; }
 .stat-label { font-size: 12px; color: var(--text-light); margin-top: 3px; }
 
-/* ── Filters ───────────────────────────────────────────── */
 .filter-row { display: flex; gap: 10px; align-items: center; }
 .filter-row > * { flex: 1; min-width: 0; }
 .filter-select { flex: 0 0 260px; }
 
-/* ── Section tree ──────────────────────────────────────── */
 .section-tree { display: flex; flex-direction: column; gap: 10px; }
 
 /* Course group (parent row) */
@@ -135,14 +131,12 @@
   font-size: 12px; font-weight: 600; cursor: not-allowed;
 }
 
-/* ── Enrollment table (Admin) ──────────────────────────── */
 .enrollment-table-section { margin-top: 8px; }
 .section-list-title {
   display: flex; align-items: center; gap: 8px;
   font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--text-dark);
 }
 
-/* ── Table ─────────────────────────────────────────────── */
 .table-wrapper {
   overflow-x: auto;
   border: 1px solid var(--border-color);
@@ -173,7 +167,6 @@
 .empty-state { text-align: center; padding: 28px; background: var(--surface); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-light); font-size: 13px; }
 .loading-state { text-align: center; padding: 28px; color: var(--text-light); font-size: 13px; }
 
-/* ── Pagination ────────────────────────────────────────── */
 .pagination-bar {
   display: flex; align-items: center; justify-content: space-between;
   padding: 10px 14px;
