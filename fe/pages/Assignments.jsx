@@ -74,9 +74,8 @@ export default function Assignments() {
   }, []);
 
   useEffect(() => {
-    if (isTeacher) {
-      assignments.forEach(a => fetchSubmissions(a._id));
-    }
+    assignments.forEach(a => fetchSubmissions(a._id));
+    if (isStudent) fetchGrades(); // Phải lấy điểm để biết bài đã chấm chưa
   }, [assignments]);
 
   const showToast = (message, type) => setToast({ message, type });
@@ -244,16 +243,53 @@ export default function Assignments() {
               </div>
 
               {isStudent && (
-                <button
-                  onClick={() => {
-                    setSelectedAssignmentId(assignment._id);
-                    setShowSubmitModal(true);
-                  }}
-                  className="btn-submit"
-                  disabled={isDeadlinePassed(assignment.dueDate)}
-                >
-                  {isDeadlinePassed(assignment.dueDate) ? 'Hạn nộp đã hết' : 'Nộp Bài'}
-                </button>
+                <div className="student-submission-section">
+                  {(() => {
+                    const userSub = (submissions[assignment._id] || [])[0];
+                    const grade = userSub ? grades[userSub._id] : null;
+                    
+                    let statusClass = 'not-submitted';
+                    let statusText = 'Chưa nộp';
+                    if (userSub) {
+                      statusClass = grade ? 'graded' : 'submitted';
+                      statusText = grade ? 'Đã chấm điểm' : 'Đã nộp bài';
+                    }
+
+                    return (
+                      <>
+                        <div className={`status-badge ${statusClass}`}>
+                          {statusText}
+                        </div>
+                        
+                        {userSub && (
+                          <div className="my-submission">
+                            <p><strong>Bài đã nộp:</strong></p>
+                            <a href={userSub.fileUrl} target="_blank" rel="noopener noreferrer" className="file-link">
+                              <File size={14} /> Xem bài làm
+                            </a>
+                            {grade && (
+                              <div className="grade-result">
+                                <p className="score">Điểm: <span>{grade.score}/100</span></p>
+                                {grade.feedback && <p className="feedback">Nhận xét: {grade.feedback}</p>}
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        <button
+                          onClick={() => {
+                            setSelectedAssignmentId(assignment._id);
+                            setShowSubmitModal(true);
+                          }}
+                          className="btn-submit"
+                          disabled={isDeadlinePassed(assignment.dueDate)}
+                        >
+                          {isDeadlinePassed(assignment.dueDate) ? 'Hạn nộp đã hết' : (userSub ? 'Nộp Lại' : 'Nộp Bài')}
+                        </button>
+                      </>
+                    );
+                  })()}
+                </div>
               )}
 
               {isTeacher && (

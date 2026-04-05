@@ -79,7 +79,7 @@ async function seedDefaultsIfEnabled() {
   }
 
   const adminEmail = 'admin@gmail.com';
-  const existingAdmin = await User.findOne({ email: adminEmail });
+  const existingAdmin = await User.findOne({ email: adminEmail }); // Kiểm tra mọi trạng thái (kể cả đã xóa mềm)
   if (!existingAdmin) {
     const hashed = await bcrypt.hash('admin123', 10);
     await User.create({
@@ -111,7 +111,7 @@ async function seedDefaultsIfEnabled() {
       { email: 'sv03@example.com', username: 'Phạm Đức Anh' }
     ];
     for (const sv of svEmails) {
-      const ex = await User.findOne({ email: sv.email });
+      const ex = await User.findOne({ email: sv.email }); // Tránh trùng lặp khi seed lại
       if (!ex) {
         const hashed = await bcrypt.hash('sv123456', 10);
         await User.create({

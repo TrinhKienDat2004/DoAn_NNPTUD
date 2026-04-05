@@ -26,7 +26,7 @@ router.post(
   },
   submitAssignmentValidator,
   validateRequest,
-  submissionsController.submitAssignment
+  submissionsController.submit
 );
 
 // Get submissions for an assignment (instructor view)

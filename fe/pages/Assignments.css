@@ -386,6 +386,72 @@
   font-size: 16px;
 }
 
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.status-badge.not-submitted {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.status-badge.submitted {
+  background-color: #fef9c3;
+  color: #ca8a04;
+  border: 1px solid #fef08a;
+}
+
+.status-badge.graded {
+  background-color: #dcfce7;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+/* My Submission Section */
+.my-submission {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 15px;
+}
+
+.my-submission p {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #475569;
+}
+
+.grade-result {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed #cbd5e1;
+}
+
+.grade-result .score {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.grade-result .score span {
+  color: #16a34a;
+  font-size: 1.1rem;
+}
+
+.grade-result .feedback {
+  margin-top: 4px;
+  font-style: italic;
+  font-size: 13px;
+  color: #64748b;
+}
+
 @media (max-width: 768px) {
   .assignments-header {
     flex-direction: column;
