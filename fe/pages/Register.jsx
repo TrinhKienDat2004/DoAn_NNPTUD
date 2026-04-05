@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { UserPlus } from 'lucide-react';
 import axiosClient from '../api/axiosClient';
+import Toast from '../components/Toast'; // Import Toast
 import './Login.css'; // Reuse styles
 import './Register.css';
 
@@ -13,9 +14,16 @@ export default function Register() {
     confirmPassword: '',
     roleName: 'SINHVIEN'
   });
-  const [error, setError] = useState('');
+  
+  // Thay thế error state bằng toastConfig
+  const [toastConfig, setToastConfig] = useState({ message: '', type: 'info' });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Hàm tiện ích để gọi Toast
+  const showToast = (message, type = 'error') => {
+    setToastConfig({ message, type });
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -23,11 +31,13 @@ export default function Register() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    
+    // Validate mật khẩu
     if (formData.password !== formData.confirmPassword) {
-      setError('Mật khẩu nhập lại không khớp.');
+      showToast('Mật khẩu nhập lại không khớp.', 'error');
       return;
     }
-    setError('');
+    
     setLoading(true);
 
     try {
@@ -39,13 +49,16 @@ export default function Register() {
       });
       
       if (resp.status === 'success') {
-        // Sau khi đăng ký thành công → chuyển sang trang đăng nhập
-        navigate('/login');
+        // Hiện thông báo thành công và đợi 1.5s rồi mới chuyển trang
+        showToast('Đăng ký thành công! Đang chuyển đến trang đăng nhập...', 'success');
+        setTimeout(() => {
+          navigate('/login');
+        }, 1500);
       } else {
-        setError(resp.message || 'Đăng ký thất bại.');
+        showToast(resp.message || 'Đăng ký thất bại.', 'error');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Đã có lỗi xảy ra từ máy chủ.');
+      showToast(err.response?.data?.message || 'Đã có lỗi xảy ra từ máy chủ.', 'error');
     } finally {
       setLoading(false);
     }
@@ -53,6 +66,13 @@ export default function Register() {
 
   return (
     <div className="register-container">
+      {/* Đặt component Toast ở ngoài card form */}
+      <Toast 
+        message={toastConfig.message} 
+        type={toastConfig.type} 
+        onClose={() => setToastConfig({ message: '', type: 'info' })} 
+      />
+
       <div className="register-card">
         <div className="login-header">
           <div className="login-icon">
@@ -61,8 +81,6 @@ export default function Register() {
           <h2 className="login-title">Tạo Tài Khoản</h2>
           <p className="login-subtitle">Tham gia hệ thống với vai trò Sinh viên hoặc Giảng viên</p>
         </div>
-
-        {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleRegister}>
           <div className="form-group" style={{ textAlign: 'left' }}>

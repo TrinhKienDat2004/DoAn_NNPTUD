@@ -37,4 +37,17 @@ axiosClient.interceptors.response.use(
   }
 );
 
+// ---> THÊM ĐOẠN NÀY ĐỂ HỖ TRỢ UPLOAD FILE <---
+export const uploadFile = async (file, type = 'avatar') => {
+  const formData = new FormData();
+  const keyName = type === 'avatar' ? 'avatar' : 'file';
+  formData.append(keyName, file);
+
+  return axiosClient.post(`/upload/${type}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+};
+
 export default axiosClient;

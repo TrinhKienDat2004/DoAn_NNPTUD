@@ -11,7 +11,18 @@ async function list(req, res) {
   }
 
   const docs = await Notification.find(filter).sort({ createdAt: -1 });
-  return res.status(200).json({ status: 'success', data: docs });
+  
+  // Trả thêm số lượng thông báo chưa đọc nếu là user đang xem của chính mình
+  let unreadCount = 0;
+  if (roleName !== 'ADMIN') {
+    unreadCount = await Notification.countDocuments({ userId: req.user.id, isRead: false, isDeleted: false });
+  }
+
+  return res.status(200).json({ 
+    status: 'success', 
+    data: docs,
+    unreadCount 
+  });
 }
 
 async function getById(req, res) {
@@ -74,5 +85,28 @@ async function deleteById(req, res) {
   return res.status(200).json({ status: 'success', message: 'Deleted (soft)', data: doc });
 }
 
-module.exports = { list, getById, create, updateById, deleteById };
+// Đánh dấu 1 thông báo là đã đọc
+async function markAsRead(req, res) {
+  const { id } = req.params;
+  if (!mongoose.isValidObjectId(id)) return res.status(400).json({ status: 'fail', message: 'Invalid id' });
 
+  const doc = await Notification.findOneAndUpdate(
+    { _id: id, userId: req.user.id, isDeleted: false },
+    { isRead: true },
+    { new: true }
+  );
+  if (!doc) return res.status(404).json({ status: 'fail', message: 'Not found' });
+  
+  return res.status(200).json({ status: 'success', data: doc });
+}
+
+// Đánh dấu tất cả thông báo của user là đã đọc
+async function markAllAsRead(req, res) {
+  await Notification.updateMany(
+    { userId: req.user.id, isRead: false, isDeleted: false },
+    { $set: { isRead: true } }
+  );
+  return res.status(200).json({ status: 'success', message: 'Đã đánh dấu đọc tất cả' });
+}
+
+module.exports = { list, getById, create, updateById, deleteById, markAsRead, markAllAsRead };

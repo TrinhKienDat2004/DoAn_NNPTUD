@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 import axiosClient from '../api/axiosClient';
+import Toast from '../components/Toast';
 import './Login.css';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  // Thay thế error state bằng toastConfig
+  const [toastConfig, setToastConfig] = useState({ message: '', type: 'info' });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -19,13 +21,17 @@ export default function Login() {
     }
   }, [navigate]);
 
+  // Hàm tiện ích để gọi Toast nhanh
+  const showToast = (message, type = 'error') => {
+    setToastConfig({ message, type });
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!email || !password) {
-      setError('Vui lòng nhập Email và Mật khẩu.');
+      showToast('Vui lòng nhập Email và Mật khẩu.', 'error');
       return;
     }
-    setError('');
     setLoading(true);
 
     try {
@@ -36,10 +42,10 @@ export default function Login() {
         localStorage.setItem('user', JSON.stringify(resp.data.user));
         navigate('/');
       } else {
-        setError(resp.message || 'Đăng nhập thất bại.');
+        showToast(resp.message || 'Đăng nhập thất bại.', 'error');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Đã có lỗi xảy ra từ máy chủ.');
+      showToast(err.response?.data?.message || 'Đã có lỗi xảy ra từ máy chủ.', 'error');
     } finally {
       setLoading(false);
     }
@@ -47,16 +53,22 @@ export default function Login() {
 
   return (
     <div className="login-container">
+      {/* Component Toast được đặt ở ngoài cùng container */}
+      <Toast 
+        message={toastConfig.message} 
+        type={toastConfig.type} 
+        onClose={() => setToastConfig({ message: '', type: 'info' })} 
+      />
+
       <div className="login-card">
         <div className="login-header">
           <div className="login-icon">
-            
+             {/* Nếu muốn dùng icon LogIn đã import, bạn có thể uncomment dòng dưới */}
+             {/* <LogIn size={32} /> */}
           </div>
           <h2 className="login-title">Chào mừng trở lại</h2>
           <p className="login-subtitle">Đăng nhập để vào Hệ thống Quản lý Đào tạo</p>
         </div>
-
-        {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleLogin}>
           <div className="form-group" style={{ textAlign: 'left' }}>

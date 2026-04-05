@@ -29,7 +29,7 @@ function makeFileUrl(destSubdir, filename) {
 
 const avatarUpload = multer({
   storage: makeDiskStorage('avatars'),
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
   fileFilter: (req, file, cb) => {
     const ok = /^image\//.test(file.mimetype);
     if (!ok) return cb(new Error('Avatar must be an image'));
@@ -39,12 +39,19 @@ const avatarUpload = multer({
 
 const documentUpload = multer({
   storage: makeDiskStorage('documents'),
-  limits: { fileSize: 20 * 1024 * 1024 }
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname || '').toLowerCase();
+    if (!['.pdf', '.doc', '.docx'].includes(ext)) {
+      return cb(new Error('Chỉ cho phép tải lên file PDF hoặc Word (.doc, .docx) cho học liệu'));
+    }
+    cb(null, true);
+  }
 }).single('file');
 
 const submissionUpload = multer({
   storage: makeDiskStorage('submissions'),
-  limits: { fileSize: 30 * 1024 * 1024 }
+  limits: { fileSize: 30 * 1024 * 1024 } // 30MB
 }).single('file');
 
 module.exports = {
@@ -53,4 +60,3 @@ module.exports = {
   submissionUpload,
   makeFileUrl
 };
-
